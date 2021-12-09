@@ -14,20 +14,6 @@ def df_year(df):
     return data2019, data2020, data2021
 
 
-def df_split(df):
-    resident_col = ['Trips by Canadian residents', 'Trips by United States residents',
-                    'Trips by all other countries residents', 'Total']
-    method_col = ['Automobile', 'Plane', 'Bus', 'Train, boat and other methods']
-
-    travel_resident = df.loc[df['Method of Travel'].isin(resident_col)].rename(
-        columns={'Method of Travel': 'Traveller Residency'}).set_index('Traveller Residency')
-
-    travel_method = df.loc[df['Method of Travel'].isin(method_col)].set_index('Method of Travel')
-
-    travel_method = travel_method.groupby('Method of Travel').sum()
-
-    return travel_resident, travel_method
-
 
 def main():
     # Todo
@@ -39,12 +25,21 @@ def main():
     # - Graph of number of people travelling by month aka the whole year(jan-dec on x axis)
     monthlyTravel = pd.read_csv(sys.argv[2])
 
-    travel_resident, travel_method = df_split(monthlyTravel)
+    resident_col = ['Trips by Canadian residents', 'Trips by United States residents',
+                    'Trips by all other countries residents', 'Total']
+                    
+    travel_resident = monthlyTravel.loc[monthlyTravel['Method of Travel'].isin(resident_col)].rename(
+        columns={'Method of Travel': 'Traveller Residency'}).set_index('Traveller Residency')
 
     data2019, data2020, data2021 = df_year(travel_resident)
 
+    total2019 = data2019.to_numpy()[3]
+    total2020 = data2020.to_numpy()[3]
+    total2021 = data2021.to_numpy()[3]
+
+    print("<2019>",total2019,"<2020>",total2020,"<2021>",total2021)
+
     print(travel_resident)
-    print(travel_method)
 
     # - Graph of how people are travelling by month (jan-dec on x axis)
 
