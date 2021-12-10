@@ -85,11 +85,12 @@ def main():
     # - Use one of machine learning methods to compute future monthly values
     # 1. Use polynomial Regression with Degree 3 to calculate future values
 
+    travel_residentOnlyAfterCovid = travel_resident.iloc[16:]
     dates = pd.read_csv(sys.argv[4])
+    datesOnlyAfterCovid = dates.iloc[16:]
     datesPredict = pd.read_csv(sys.argv[5])
-   
-    #poly = PolynomialFeatures(degree = 1, include_bias=True)
-    #X_poly = poly.fit_transform(dates)
+    
+    #With precovid data
     X_poly = dates
     y = travel_resident['Trips by Canadian residents']
     modelCan = LinearRegression(fit_intercept=False)
@@ -117,7 +118,35 @@ def main():
     modelTotal.fit(X_poly, y)
     yTotal_pred = modelTotal.predict(datesPredict)
     print(yTotal_pred)
+    
+    #Without precovid data
+    X_poly = datesOnlyAfterCovid
+    y = travel_residentOnlyAfterCovid['Trips by Canadian residents']
+    modelCanWC = LinearRegression(fit_intercept=False)
+    modelCanWC.fit(X_poly, y)
+    yCanWC_pred = modelCanWC.predict(datesPredict)
+    print(yCanWC_pred)
 
+    y = travel_residentOnlyAfterCovid['Trips by United States residents']
+    modelUSWC = LinearRegression(fit_intercept=False)
+    modelUSWC.fit(X_poly, y)
+    modelUSWC.fit(X_poly, y)
+    yUSWC_pred = modelUSWC.predict(datesPredict)
+    print(yUSWC_pred)
+    
+    y = travel_residentOnlyAfterCovid['Trips by all other countries residents']
+    modelOtherWC = LinearRegression(fit_intercept=False)
+    modelOtherWC.fit(X_poly, y)
+    modelOtherWC.fit(X_poly, y)
+    yOtherWC_pred = modelOtherWC.predict(datesPredict)
+    print(yOtherWC_pred)
+
+    y = travel_residentOnlyAfterCovid['Total']
+    modelTotalWC = LinearRegression(fit_intercept=False)
+    modelTotalWC.fit(X_poly, y)
+    modelTotalWC.fit(X_poly, y)
+    yTotalWC_pred = modelTotalWC.predict(datesPredict)
+    print(yTotalWC_pred)
     # - Graph of number of people travelling by month with MC values(jan-dec on x axis)
 
     # - Check the validity of the data again (p-value)
