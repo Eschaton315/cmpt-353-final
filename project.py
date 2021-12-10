@@ -105,8 +105,6 @@ def main():
     print(stats.normaltest(travel_residentOnlyAfterCovid['Trips by all other countries residents']).pvalue)
     print(stats.normaltest(travel_residentOnlyAfterCovid['Total']).pvalue)
 
-    # 2. Use print(stats.normaltest(xa).pvalue) against the 4 percentage change
-
 
 
     # - Use one of machine learning methods to compute future monthly values
@@ -217,6 +215,8 @@ def main():
     print(stats.normaltest(predictedDataWC['Trips by United States residents']).pvalue)
     print(stats.normaltest(predictedDataWC['Trips by all other countries residents']).pvalue)
     print(stats.normaltest(predictedDataWC['Total']).pvalue)
+    
+    
 
 if __name__ == '__main__':
     main()
