@@ -55,6 +55,8 @@ def main():
     # plt.show()
     plt.savefig('monthly_travel.png')
 
+
+
     # - Graph to compare the traveller numbers 2019-2020 vs 2020-2021
     
     monthlyChange = pd.read_csv(sys.argv[3])
@@ -63,6 +65,8 @@ def main():
         columns={'Method of Travel': 'Traveller Residency'}).set_index('Traveller Residency')
 
     print(travel_change)
+
+
 
     # - Use tests to check the validity of the data (p-value):
     #  expecting that it could show very little correlation because of how crazy the values differ
@@ -75,17 +79,29 @@ def main():
 
     # print("Transpose", travel_resident, "\n")
 
+    print("pvalue for stats with pre covid data \n")
     print(stats.normaltest(travel_resident['Trips by Canadian residents']).pvalue)
     print(stats.normaltest(travel_resident['Trips by United States residents']).pvalue)
     print(stats.normaltest(travel_resident['Trips by all other countries residents']).pvalue)
     print(stats.normaltest(travel_resident['Total']).pvalue)
+    
+    travel_residentOnlyAfterCovid = travel_resident.iloc[16:]
+    
+    print("pvalue for stats without pre covid data \n")
+    print(stats.normaltest(travel_residentOnlyAfterCovid['Trips by Canadian residents']).pvalue)
+    print(stats.normaltest(travel_residentOnlyAfterCovid['Trips by United States residents']).pvalue)
+    print(stats.normaltest(travel_residentOnlyAfterCovid['Trips by all other countries residents']).pvalue)
+    print(stats.normaltest(travel_residentOnlyAfterCovid['Total']).pvalue)
 
     # 2. Use print(stats.normaltest(xa).pvalue) against the 4 percentage change
+
+
 
     # - Use one of machine learning methods to compute future monthly values
     # 1. Use polynomial Regression with Degree 3 to calculate future values
 
-    travel_residentOnlyAfterCovid = travel_resident.iloc[16:]
+    #Without precovid data
+    
     dates = pd.read_csv(sys.argv[4])
     datesOnlyAfterCovid = dates.iloc[16:]
     datesPredict = pd.read_csv(sys.argv[5])
@@ -96,28 +112,28 @@ def main():
     modelCan = LinearRegression(fit_intercept=False)
     modelCan.fit(X_poly, y)
     yCan_pred = modelCan.predict(datesPredict)
-    print(yCan_pred)
+    #print(yCan_pred)
 
     y = travel_resident['Trips by United States residents']
     modelUS = LinearRegression(fit_intercept=False)
     modelUS.fit(X_poly, y)
     modelUS.fit(X_poly, y)
     yUS_pred = modelUS.predict(datesPredict)
-    print(yUS_pred)
+    #print(yUS_pred)
     
     y = travel_resident['Trips by all other countries residents']
     modelOther = LinearRegression(fit_intercept=False)
     modelOther.fit(X_poly, y)
     modelOther.fit(X_poly, y)
     yOther_pred = modelOther.predict(datesPredict)
-    print(yOther_pred)
+    #print(yOther_pred)
 
     y = travel_resident['Total']
     modelTotal = LinearRegression(fit_intercept=False)
     modelTotal.fit(X_poly, y)
     modelTotal.fit(X_poly, y)
     yTotal_pred = modelTotal.predict(datesPredict)
-    print(yTotal_pred)
+    #print(yTotal_pred)
     
     #Without precovid data
     X_poly = datesOnlyAfterCovid
@@ -125,32 +141,66 @@ def main():
     modelCanWC = LinearRegression(fit_intercept=False)
     modelCanWC.fit(X_poly, y)
     yCanWC_pred = modelCanWC.predict(datesPredict)
-    print(yCanWC_pred)
+    #print(yCanWC_pred)
 
     y = travel_residentOnlyAfterCovid['Trips by United States residents']
     modelUSWC = LinearRegression(fit_intercept=False)
     modelUSWC.fit(X_poly, y)
     modelUSWC.fit(X_poly, y)
     yUSWC_pred = modelUSWC.predict(datesPredict)
-    print(yUSWC_pred)
+    #print(yUSWC_pred)
     
     y = travel_residentOnlyAfterCovid['Trips by all other countries residents']
     modelOtherWC = LinearRegression(fit_intercept=False)
     modelOtherWC.fit(X_poly, y)
     modelOtherWC.fit(X_poly, y)
     yOtherWC_pred = modelOtherWC.predict(datesPredict)
-    print(yOtherWC_pred)
+    #print(yOtherWC_pred)
 
     y = travel_residentOnlyAfterCovid['Total']
     modelTotalWC = LinearRegression(fit_intercept=False)
     modelTotalWC.fit(X_poly, y)
     modelTotalWC.fit(X_poly, y)
     yTotalWC_pred = modelTotalWC.predict(datesPredict)
-    print(yTotalWC_pred)
+    #print(yTotalWC_pred)
+    
     # - Graph of number of people travelling by month with MC values(jan-dec on x axis)
 
     # - Check the validity of the data again (p-value)
-
+    
+    predictedData = pd.DataFrame(columns = ['dates', 'Trips by Canadian residents', 'Trips by United States residents',
+    'Trips by all other countries residents', 'Total']).set_index('dates')
+    predictedData['dates'] = np.append(dates, datesPredict)
+    predictedData['Trips by Canadian residents'] = np.append(travel_resident['Trips by Canadian residents'], yCan_pred)
+    predictedData['Trips by United States residents'] = np.append(travel_resident['Trips by United States residents'], yUS_pred)
+    predictedData['Trips by all other countries residents'] = np.append(travel_resident['Trips by all other countries residents'], yOther_pred)
+    predictedData['Total'] = np.append(travel_resident['Total'], yTotal_pred)
+    print(predictedData)
+    
+    predictedDataWC = pd.DataFrame(columns = ['dates', 'Trips by Canadian residents', 'Trips by United States residents',
+    'Trips by all other countries residents', 'Total']).set_index('dates')
+    predictedDataWC['dates'] = np.append(datesOnlyAfterCovid, datesPredict)
+    predictedDataWC['Trips by Canadian residents'] = np.append(travel_residentOnlyAfterCovid['Trips by Canadian residents'], yCanWC_pred)
+    predictedDataWC['Trips by United States residents'] = np.append(travel_residentOnlyAfterCovid['Trips by United States residents'], yUSWC_pred)
+    predictedDataWC['Trips by all other countries residents'] = np.append(travel_residentOnlyAfterCovid['Trips by all other countries residents'], yOtherWC_pred)
+    predictedDataWC['Total'] = np.append(travel_residentOnlyAfterCovid['Total'], yTotalWC_pred)
+    print(predictedDataWC)
+    
+    
+    
+    print("pvalue for stats with pre covid data \n")
+    print(stats.normaltest(predictedData['Trips by Canadian residents']).pvalue)
+    print(stats.normaltest(predictedData['Trips by United States residents']).pvalue)
+    print(stats.normaltest(predictedData['Trips by all other countries residents']).pvalue)
+    print(stats.normaltest(predictedData['Total']).pvalue)
+    
+   
+    
+    print("pvalue for stats without pre covid data \n")
+    print(stats.normaltest(predictedDataWC['Trips by Canadian residents']).pvalue)
+    print(stats.normaltest(predictedDataWC['Trips by United States residents']).pvalue)
+    print(stats.normaltest(predictedDataWC['Trips by all other countries residents']).pvalue)
+    print(stats.normaltest(predictedDataWC['Total']).pvalue)
 
 
 if __name__ == '__main__':
