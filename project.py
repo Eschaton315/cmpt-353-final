@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 from sklearn.linear_model import LinearRegression
-import datetime
+import datetime as dt
 
 
 def df_year(df):
@@ -20,12 +20,12 @@ def main():
     # Todo
     # Separate dataframe, make a separate one for month and one for other statistics
 
-    intervention = pd.read_csv(sys.argv[1])
+    intervention = pd.read_csv(sys.argv[1], parse_dates = ['Date'])
     intervention = intervention.loc[intervention['Intervention category'] == 'Travel']
 
     # - Graph of number of people travelling by month aka the whole year(jan-dec on x axis)
+    #monthlyTravel = pd.read_csv(sys.argv[2], parse_dates = ['Date'])
     monthlyTravel = pd.read_csv(sys.argv[2])
-
     resident_col = ['Trips by Canadian residents', 'Trips by United States residents',
                     'Trips by all other countries residents', 'Total']
 
@@ -56,7 +56,8 @@ def main():
     plt.savefig('monthly_travel.png')
 
     # - Graph to compare the traveller numbers 2019-2020 vs 2020-2021
-    monthlyChange = pd.read_csv(sys.argv[3])
+    
+    ################# monthlyChange = pd.read_csv(sys.argv[3])
 
     travel_change = monthlyChange.loc[monthlyChange['Method of Travel'].isin(resident_col)].rename(
         columns={'Method of Travel': 'Traveller Residency'}).set_index('Traveller Residency')
@@ -67,7 +68,9 @@ def main():
     #  expecting that it could show very little correlation because of how crazy the values differ
     # 1. Use print(stats.normaltest(xa).pvalue) against all 4 traveller number values
 
+
     # Need to transpose to make these lines work
+
     travel_resident = travel_resident.T
 
     # print("Transpose", travel_resident, "\n")
@@ -93,24 +96,29 @@ def main():
     """
 
     dates = travel_resident.index.values.tolist()
-    dates = int(dates.strftime("%Y%m"))
-    poly = PolynomialFeatures(degree=3, include_bias=True)
-    X_poly = poly.fit_transform(dates)
-    y = travel_resident['Trips by Canadian residents']
-    model = LinearRegression(fit_intercept=False)
-    model.fit(X_poly, y)
+    print(dates)
+    # dates = dates.astype(dt.datetime)
+    # #dates = int(dates.strftime("%Y%m"))
+    # #dates = dates.map(dt.datetime.toordinal)
+    # dates = dates.toordinal()
+    
+    # poly = PolynomialFeatures(degree = 3, include_bias=True)
+    # X_poly = poly.fit_transform(dates)
+    # y = travel_resident['Trips by Canadian residents']
+    # model = LinearRegression(fit_intercept=False)
+    # model.fit(X_poly, y)
 
-    y = travel_resident['Trips by United States residents']
-    model = LinearRegression(fit_intercept=False)
-    model.fit(X_poly, y)
+    # y = travel_resident['Trips by United States residents']
+    # model = LinearRegression(fit_intercept=False)
+    # model.fit(X_poly, y)
 
-    y = travel_resident['Trips by all other countries residents']
-    model = LinearRegression(fit_intercept=False)
-    model.fit(X_poly, y)
+    # y = travel_resident['Trips by all other countries residents']
+    # model = LinearRegression(fit_intercept=False)
+    # model.fit(X_poly, y)
 
-    y = travel_resident['Total']
-    model = LinearRegression(fit_intercept=False)
-    model.fit(X_poly, y)
+    # y = travel_resident['Total']
+    # model = LinearRegression(fit_intercept=False)
+    # model.fit(X_poly, y)
 
     # - Graph of number of people travelling by month with MC values(jan-dec on x axis)
 
