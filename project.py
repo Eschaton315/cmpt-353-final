@@ -85,8 +85,8 @@ def main():
     # - Use one of machine learning methods to compute future monthly values
     # 1. Use polynomial Regression with Degree 3 to calculate future values
 
-    dates = pd.read_csv(sys.argv[3])
-    datesPredict = pd.read_csv(sys.argv[4])
+    dates = pd.read_csv(sys.argv[4])
+    datesPredict = pd.read_csv(sys.argv[5])
    
     poly = PolynomialFeatures(degree = 3, include_bias=True)
     X_poly = poly.fit_transform(dates)
