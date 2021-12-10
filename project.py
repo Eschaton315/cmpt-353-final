@@ -95,24 +95,28 @@ def main():
     modelCan = LinearRegression(fit_intercept=False)
     modelCan.fit(X_poly, y)
     yCan_pred = modelCan.predict(datesPredict)
+    print(yCan_pred)
 
     y = travel_resident['Trips by United States residents']
     modelUS = LinearRegression(fit_intercept=False)
     modelUS.fit(X_poly, y)
     modelUS.fit(X_poly, y)
     yUS_pred = modelUS.predict(datesPredict)
+    print(yUS_pred)
     
     y = travel_resident['Trips by all other countries residents']
     modelOther = LinearRegression(fit_intercept=False)
     modelOther.fit(X_poly, y)
     modelOther.fit(X_poly, y)
     yOther_pred = modelOther.predict(datesPredict)
+    print(yOther_pred)
 
     y = travel_resident['Total']
     modelTotal = LinearRegression(fit_intercept=False)
     modelTotal.fit(X_poly, y)
     modelTotal.fit(X_poly, y)
     yTotal_pred = modelTotal.predict(datesPredict)
+    print(yTotal_pred)
 
     # - Graph of number of people travelling by month with MC values(jan-dec on x axis)
 
