@@ -93,25 +93,25 @@ def main():
     y = travel_resident['Trips by Canadian residents']
     modelCan = LinearRegression(fit_intercept=False)
     modelCan.fit(X_poly, y)
-    yCan_pred = modenCan.predict(datesPredict)
+    yCan_pred = modelCan.predict(datesPredict)
 
     y = travel_resident['Trips by United States residents']
     modelUS = LinearRegression(fit_intercept=False)
     modelUS.fit(X_poly, y)
     modelUS.fit(X_poly, y)
-    yUS_pred = modenCan.predict(datesPredict)
+    yUS_pred = modelUS.predict(datesPredict)
     
     y = travel_resident['Trips by all other countries residents']
     modelOther = LinearRegression(fit_intercept=False)
     modelOther.fit(X_poly, y)
     modelOther.fit(X_poly, y)
-    yOther_pred = modenCan.predict(datesPredict)
+    yOther_pred = modelOther.predict(datesPredict)
 
     y = travel_resident['Total']
     modelTotal = LinearRegression(fit_intercept=False)
     modelTotal.fit(X_poly, y)
     modelTotal.fit(X_poly, y)
-    yTotal_pred = modenCan.predict(datesPredict)
+    yTotal_pred = modelTotal.predict(datesPredict)
 
     # - Graph of number of people travelling by month with MC values(jan-dec on x axis)
 
