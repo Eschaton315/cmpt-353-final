@@ -79,40 +79,28 @@ def main():
     # - Use one of machine learning methods to compute future monthly values
     # 1. Use polynomial Regression with Degree 3 to calculate future values
 
-    # Example
-    # poly = PolynomialFeatures(degree=3, include_bias=True)
-    # X_poly = poly.fit_transform(X)
-    # model = LinearRegression(fit_intercept=False)
-    # model.fit(X_poly, y)
-
-    # Since needed to change how we get the list of dates. However, they do not work with strftime as of now
-
-    # """
-
-    dates = travel_resident.index.values.tolist()
+    dates = pd.read_csv(sys.argv[3])
+    datesPredict = pd.read_csv(sys.argv[4])
     print(dates)
-    # dates = dates.astype(dt.datetime)
-    # #dates = int(dates.strftime("%Y%m"))
-    # #dates = dates.map(dt.datetime.toordinal)
-    # dates = dates.toordinal()
     
-    # poly = PolynomialFeatures(degree = 3, include_bias=True)
-    # X_poly = poly.fit_transform(dates)
-    # y = travel_resident['Trips by Canadian residents']
-    # model = LinearRegression(fit_intercept=False)
-    # model.fit(X_poly, y)
+    
+    poly = PolynomialFeatures(degree = 3, include_bias=True)
+    X_poly = poly.fit_transform(dates)
+    y = travel_resident['Trips by Canadian residents']
+    modelCan = LinearRegression(fit_intercept=False)
+    modelCan.fit(X_poly, y)
 
-    # y = travel_resident['Trips by United States residents']
-    # model = LinearRegression(fit_intercept=False)
-    # model.fit(X_poly, y)
+    y = travel_resident['Trips by United States residents']
+    modelUS = LinearRegression(fit_intercept=False)
+    modelUS.fit(X_poly, y)
 
-    # y = travel_resident['Trips by all other countries residents']
-    # model = LinearRegression(fit_intercept=False)
-    # model.fit(X_poly, y)
+    y = travel_resident['Trips by all other countries residents']
+    modelOther = LinearRegression(fit_intercept=False)
+    modelOther.fit(X_poly, y)
 
-    # y = travel_resident['Total']
-    # model = LinearRegression(fit_intercept=False)
-    # model.fit(X_poly, y)
+    y = travel_resident['Total']
+    modelTotal = LinearRegression(fit_intercept=False)
+    modelTotal.fit(X_poly, y)
 
     # - Graph of number of people travelling by month with MC values(jan-dec on x axis)
 
