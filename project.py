@@ -9,22 +9,20 @@ from sklearn.linear_model import LinearRegression
 import datetime as dt
 
 
-def df_year(df):
-    data2019 = df.filter(regex='19-').rename(columns=lambda x: x.lstrip('19-'))
-    data2020 = df.filter(regex='20-').rename(columns=lambda x: x.lstrip('20-'))
-    data2021 = df.filter(regex='21-').rename(columns=lambda x: x.lstrip('21-'))
-    return data2019, data2020, data2021
+def df_year(df, date_str):
+    data = df.filter(regex=date_str).rename(columns=lambda x: x.strip(date_str))
+    return data
 
 
 def main():
     # Todo
     # Separate dataframe, make a separate one for month and one for other statistics
 
-    intervention = pd.read_csv(sys.argv[1], parse_dates = ['Date'])
+    intervention = pd.read_csv(sys.argv[1], parse_dates=['Date'])
     intervention = intervention.loc[intervention['Intervention category'] == 'Travel']
 
     # - Graph of number of people travelling by month aka the whole year(jan-dec on x axis)
-    #monthlyTravel = pd.read_csv(sys.argv[2], parse_dates = ['Date'])
+
     monthlyTravel = pd.read_csv(sys.argv[2])
     resident_col = ['Trips by Canadian residents', 'Trips by United States residents',
                     'Trips by all other countries residents', 'Total']
@@ -32,7 +30,9 @@ def main():
     travel_resident = monthlyTravel.loc[monthlyTravel['Method of Travel'].isin(resident_col)].rename(
         columns={'Method of Travel': 'Traveller Residency'}).set_index('Traveller Residency')
 
-    data2019, data2020, data2021 = df_year(travel_resident)
+    data2019 = df_year(travel_resident, '19-')
+    data2020 = df_year(travel_resident, '20-')
+    data2021 = df_year(travel_resident, '21-')
 
     total2019 = data2019.to_numpy()[3]
     total2020 = data2020.to_numpy()[3]
@@ -41,37 +41,49 @@ def main():
     # - Graph of how people are travelling by month (jan-dec on x-axis)
     month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
 
-    plt.figure(figsize=(9, 7))
-    plt.plot(month_name, total2019, '-b', label='2019')
-    plt.plot(month_name, total2020, '-r', label='2020')
-    plt.plot(month_name[:len(total2021)], total2021, '-g', label='2021')
+    fig1, ax1 = plt.subplots(figsize=(9, 7))
+    ax1.plot(month_name, total2019, '-b', label='2019')
+    ax1.plot(month_name, total2020, '-r', label='2020')
+    ax1.plot(month_name[:len(total2021)], total2021, '-g', label='2021')
     plt.ticklabel_format(style='plain', axis='y')
     plt.yticks(np.arange(0, 12000000, 500000))
-    plt.title("How people are Travelling by Month")
+    ax1.title.set_text("How people are Travelling by Month")
     plt.legend()
-    plt.ylabel("# of People Travelling to Canada")
-    plt.xlabel("Month")
-    plt.ylim(0, 11000000)
+    ax1.set_ylabel("# of People Travelling to Canada")
+    ax1.set_xlabel("Month")
+    ax1.set_ylim(0, 11000000)
     # plt.show()
     plt.savefig('monthly_travel.png')
 
 
 
     # - Graph to compare the traveller numbers 2019-2020 vs 2020-2021
-    
+
     monthlyChange = pd.read_csv(sys.argv[3])
 
     travel_change = monthlyChange.loc[monthlyChange['Method of Travel'].isin(resident_col)].rename(
         columns={'Method of Travel': 'Traveller Residency'}).set_index('Traveller Residency')
 
-    print(travel_change)
+    change2019_2020 = df_year(travel_change, '2019-2020')
+    change2020_2021 = df_year(travel_change, '2020-2021')
+    total_change2019_2020 = change2019_2020.to_numpy()[3]
+    total_change2020_2021 = change2020_2021.to_numpy()[3]
+
+    fig2, ax2 = plt.subplots()
+    ax2.plot(month_name, total_change2019_2020, '-b', label='2019-2020')
+    ax2.plot(month_name[:len(total_change2020_2021)], total_change2020_2021, '-r', label='2020-2021')
+    plt.yticks(np.arange(-100, 250, 25))
+    # need title
+    ax2.set_ylabel("Change %")
+    ax2.set_xlabel("Month")
+    plt.legend()
+    plt.savefig('monthly_change.png')
 
 
 
     # - Use tests to check the validity of the data (p-value):
     #  expecting that it could show very little correlation because of how crazy the values differ
     # 1. Use print(stats.normaltest(xa).pvalue) against all 4 traveller number values
-
 
     # Need to transpose to make these lines work
 
@@ -105,8 +117,8 @@ def main():
     dates = pd.read_csv(sys.argv[4])
     datesOnlyAfterCovid = dates.iloc[16:]
     datesPredict = pd.read_csv(sys.argv[5])
-    
-    #With precovid data
+
+    # With pre-covid data
     X_poly = dates
     y = travel_resident['Trips by Canadian residents']
     modelCan = LinearRegression(fit_intercept=False)
@@ -120,7 +132,7 @@ def main():
     modelUS.fit(X_poly, y)
     yUS_pred = modelUS.predict(datesPredict)
     #print(yUS_pred)
-    
+
     y = travel_resident['Trips by all other countries residents']
     modelOther = LinearRegression(fit_intercept=False)
     modelOther.fit(X_poly, y)
@@ -135,7 +147,9 @@ def main():
     yTotal_pred = modelTotal.predict(datesPredict)
     #print(yTotal_pred)
     
-    #Without precovid data
+
+
+    # Without pre-covid data
     X_poly = datesOnlyAfterCovid
     y = travel_residentOnlyAfterCovid['Trips by Canadian residents']
     modelCanWC = LinearRegression(fit_intercept=False)
@@ -150,6 +164,7 @@ def main():
     yUSWC_pred = modelUSWC.predict(datesPredict)
     #print(yUSWC_pred)
     
+
     y = travel_residentOnlyAfterCovid['Trips by all other countries residents']
     modelOtherWC = LinearRegression(fit_intercept=False)
     modelOtherWC.fit(X_poly, y)
@@ -163,11 +178,12 @@ def main():
     modelTotalWC.fit(X_poly, y)
     yTotalWC_pred = modelTotalWC.predict(datesPredict)
     #print(yTotalWC_pred)
-    
+ 
+ 
     # - Graph of number of people travelling by month with MC values(jan-dec on x axis)
 
-    # - Check the validity of the data again (p-value)
-    
+
+    # - Check the validity of the data again (p-value)    
     predictedData = pd.DataFrame(columns = ['dates', 'Trips by Canadian residents', 'Trips by United States residents',
     'Trips by all other countries residents', 'Total']).set_index('dates')
     predictedData['dates'] = np.append(dates, datesPredict)
@@ -201,7 +217,6 @@ def main():
     print(stats.normaltest(predictedDataWC['Trips by United States residents']).pvalue)
     print(stats.normaltest(predictedDataWC['Trips by all other countries residents']).pvalue)
     print(stats.normaltest(predictedDataWC['Total']).pvalue)
-
 
 if __name__ == '__main__':
     main()
