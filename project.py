@@ -88,8 +88,9 @@ def main():
     dates = pd.read_csv(sys.argv[4])
     datesPredict = pd.read_csv(sys.argv[5])
    
-    poly = PolynomialFeatures(degree = 3, include_bias=True)
-    X_poly = poly.fit_transform(dates)
+    #poly = PolynomialFeatures(degree = 1, include_bias=True)
+    #X_poly = poly.fit_transform(dates)
+    X_poly = dates
     y = travel_resident['Trips by Canadian residents']
     modelCan = LinearRegression(fit_intercept=False)
     modelCan.fit(X_poly, y)
