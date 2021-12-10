@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import sys
 from scipy import stats
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 from sklearn.linear_model import LinearRegression
@@ -37,11 +38,21 @@ def main():
     total2020 = data2020.to_numpy()[3]
     total2021 = data2021.to_numpy()[3]
 
-    print("<2019>", total2019, "\n<2020>", total2020, "\n<2021>", total2021)
+    # - Graph of how people are travelling by month (jan-dec on x-axis)
+    month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
 
-    print(travel_resident)
-
-    # - Graph of how people are travelling by month (jan-dec on x axis)
+    plt.figure(figsize=(9, 5))
+    plt.plot(month_name, total2019, '-b', label='2019')
+    plt.plot(month_name, total2020, '-r', label='2020')
+    plt.plot(month_name[:len(total2021)], total2021, '-g', label='2021')
+    plt.ticklabel_format(style='plain', axis='y')
+    plt.title("How people are Travelling by Month")
+    plt.legend()
+    plt.ylabel("# of People Travelling to Canada")
+    plt.xlabel("Month")
+    plt.ylim(0, 12000000)
+    #plt.show()
+    plt.savefig('monthly_travel.png')
 
     # - Graph to compare the traveller numbers 2019-2020 vs 2020-2021
     monthlyChange = pd.read_csv(sys.argv[3])
@@ -50,10 +61,10 @@ def main():
     #  expecting that it could show very little correlation because of how crazy the values differ
     # 1. Use print(stats.normaltest(xa).pvalue) against all 4 traveller number values
 
-    #Need to transpose to make these lines work
-    travel_resident=travel_resident.T
+    # Need to transpose to make these lines work
+    travel_resident = travel_resident.T
 
-    print("Transpose",travel_resident,"\n")
+    print("Transpose", travel_resident, "\n")
 
     print(stats.normaltest(travel_resident['Trips by Canadian residents']).pvalue)
     print(stats.normaltest(travel_resident['Trips by United States residents']).pvalue)
@@ -65,16 +76,15 @@ def main():
     # - Use one of machine learning methods to compute future monthly values
     # 1. Use polynomial Regression with Degree 3 to calculate future values
 
-
-
-
     # Example
     # poly = PolynomialFeatures(degree=3, include_bias=True)
     # X_poly = poly.fit_transform(X)
     # model = LinearRegression(fit_intercept=False)
     # model.fit(X_poly, y)
 
-    ##Since needed to change how we get the list of dates. However they do not work with strftime as of now
+    # Since needed to change how we get the list of dates. However, they do not work with strftime as of now
+
+    # """
 
     dates = travel_resident.index.values.tolist()
     dates = int(dates.strftime("%Y%m"))
@@ -100,7 +110,7 @@ def main():
 
     # - Check the validity of the data again (p-value)
 
-
+    # """
 
 
 if __name__ == '__main__':
