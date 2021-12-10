@@ -57,7 +57,7 @@ def main():
 
     # - Graph to compare the traveller numbers 2019-2020 vs 2020-2021
     
-    ################# monthlyChange = pd.read_csv(sys.argv[3])
+    monthlyChange = pd.read_csv(sys.argv[3])
 
     travel_change = monthlyChange.loc[monthlyChange['Method of Travel'].isin(resident_col)].rename(
         columns={'Method of Travel': 'Traveller Residency'}).set_index('Traveller Residency')
