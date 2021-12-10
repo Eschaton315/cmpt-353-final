@@ -41,22 +41,28 @@ def main():
     # - Graph of how people are travelling by month (jan-dec on x-axis)
     month_name = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
 
-    plt.figure(figsize=(9, 5))
+    plt.figure(figsize=(9, 7))
     plt.plot(month_name, total2019, '-b', label='2019')
     plt.plot(month_name, total2020, '-r', label='2020')
     plt.plot(month_name[:len(total2021)], total2021, '-g', label='2021')
     plt.ticklabel_format(style='plain', axis='y')
+    plt.yticks(np.arange(0, 12000000, 500000))
     plt.title("How people are Travelling by Month")
     plt.legend()
     plt.ylabel("# of People Travelling to Canada")
     plt.xlabel("Month")
-    plt.ylim(0, 12000000)
-    #plt.show()
+    plt.ylim(0, 11000000)
+    # plt.show()
     plt.savefig('monthly_travel.png')
 
     # - Graph to compare the traveller numbers 2019-2020 vs 2020-2021
     
-    ################# monthlyChange = pd.read_csv(sys.argv[3])
+    monthlyChange = pd.read_csv(sys.argv[3])
+
+    travel_change = monthlyChange.loc[monthlyChange['Method of Travel'].isin(resident_col)].rename(
+        columns={'Method of Travel': 'Traveller Residency'}).set_index('Traveller Residency')
+
+    print(travel_change)
 
     # - Use tests to check the validity of the data (p-value):
     #  expecting that it could show very little correlation because of how crazy the values differ
@@ -67,7 +73,7 @@ def main():
 
     travel_resident = travel_resident.T
 
-    print("Transpose", travel_resident, "\n")
+    # print("Transpose", travel_resident, "\n")
 
     print(stats.normaltest(travel_resident['Trips by Canadian residents']).pvalue)
     print(stats.normaltest(travel_resident['Trips by United States residents']).pvalue)
@@ -81,9 +87,7 @@ def main():
 
     dates = pd.read_csv(sys.argv[3])
     datesPredict = pd.read_csv(sys.argv[4])
-    print(dates)
-    
-    
+   
     poly = PolynomialFeatures(degree = 3, include_bias=True)
     X_poly = poly.fit_transform(dates)
     y = travel_resident['Trips by Canadian residents']
@@ -106,7 +110,6 @@ def main():
 
     # - Check the validity of the data again (p-value)
 
-    # """
 
 
 if __name__ == '__main__':
