@@ -3,8 +3,9 @@ import pandas as pd
 import sys
 from scipy import stats
 import matplotlib.pyplot as plt
-from pandas.plotting import table
 from sklearn.linear_model import LinearRegression
+from pandas.plotting import table
+
 import datetime as dt
 
 
