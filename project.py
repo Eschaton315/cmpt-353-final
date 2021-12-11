@@ -93,7 +93,7 @@ def main():
 
     # print("Transpose", travel_resident, "\n")
 
-    print("pvalue for stats with pre covid data \n")
+    print("\npvalue for stats with pre covid data \n")
     print(stats.normaltest(travel_resident['Trips by Canadian residents']).pvalue)
     print(stats.normaltest(travel_resident['Trips by United States residents']).pvalue)
     print(stats.normaltest(travel_resident['Trips by all other countries residents']).pvalue)
@@ -101,7 +101,7 @@ def main():
 
     travel_residentOnlyAfterCovid = travel_resident.iloc[16:]
 
-    print("pvalue for stats without pre covid data \n")
+    print("\npvalue for stats without pre covid data \n")
     print(stats.normaltest(travel_residentOnlyAfterCovid['Trips by Canadian residents']).pvalue)
     print(stats.normaltest(travel_residentOnlyAfterCovid['Trips by United States residents']).pvalue)
     print(stats.normaltest(travel_residentOnlyAfterCovid['Trips by all other countries residents']).pvalue)
@@ -176,7 +176,7 @@ def main():
 
     # - Graph of number of people travelling by month with MC values(jan-dec on x axis)
 
-    # - Check the validity of the data again (p-value)
+    
 
     datestr_predict = ["21-Oct", "21-Nov", "21-Dec", "22-Jan", "22-Feb", "22-Mar", "22-Apr", "22-May", "22-Jun",
                        "22-Jul", "22-Aug", "22-Sep", "22-Oct", "22-Nov", "22-Dec"]
@@ -190,7 +190,10 @@ def main():
         travel_resident['Trips by all other countries residents'], yOther_pred)
     predictedData['Total'] = np.append(travel_resident['Total'], yTotal_pred)
     # print(predictedData)
-
+    
+    
+    
+    # - Check the validity of the data again (p-value)
     predict_US = predictedData['Trips by United States residents'].to_numpy()
     predict_CA = predictedData['Trips by Canadian residents'].to_numpy()
     predict_OTHER = predictedData['Trips by all other countries residents'].to_numpy()
@@ -223,7 +226,8 @@ def main():
     # print(predictedDataWC)
 
     # Graphing by resident
-
+    
+    
     predict_US_WC = predictedDataWC['Trips by United States residents'].to_numpy()
     predict_CA_WC = predictedDataWC['Trips by Canadian residents'].to_numpy()
     predict_OTHER_WC = predictedDataWC['Trips by all other countries residents'].to_numpy()
@@ -242,13 +246,13 @@ def main():
     plt.legend()
     plt.savefig('predict_WC.png')
 
-    print("pvalue for stats with pre covid data \n")
+    print("\npvalue for stats with pre covid data \n")
     print(stats.normaltest(predictedData['Trips by Canadian residents']).pvalue)
     print(stats.normaltest(predictedData['Trips by United States residents']).pvalue)
     print(stats.normaltest(predictedData['Trips by all other countries residents']).pvalue)
     print(stats.normaltest(predictedData['Total']).pvalue)
 
-    print("pvalue for stats without pre covid data \n")
+    print("\npvalue for stats without pre covid data \n")
     print(stats.normaltest(predictedDataWC['Trips by Canadian residents']).pvalue)
     print(stats.normaltest(predictedDataWC['Trips by United States residents']).pvalue)
     print(stats.normaltest(predictedDataWC['Trips by all other countries residents']).pvalue)
