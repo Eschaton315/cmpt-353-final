@@ -12,7 +12,6 @@ def df_year(df, date_str):
     data = df.filter(regex=date_str).rename(columns=lambda x: x.strip(date_str))
     return data
 
-
 def main():
     # Todo
     # Separate dataframe, make a separate one for month and one for other statistics
