@@ -20,6 +20,8 @@ def main():
 
     intervention = pd.read_csv(sys.argv[1], parse_dates=['Date'])
     intervention = intervention.loc[intervention['Intervention category'] == 'Travel']
+    interventionPresent = intervention.drop(columns = ['Entry ID', 'Jurisdiction', 'Intervention category', 'Intervention type', 'Organization'])
+    print(interventionPresent)
 
     # - Graph of number of people travelling by month aka the whole year(jan-dec on x axis)
 
