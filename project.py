@@ -3,8 +3,7 @@ import pandas as pd
 import sys
 from scipy import stats
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
+from pandas.plotting import table
 from sklearn.linear_model import LinearRegression
 import datetime as dt
 
@@ -20,6 +19,10 @@ def main():
 
     intervention = pd.read_csv(sys.argv[1], parse_dates=['Date'])
     intervention = intervention.loc[intervention['Intervention category'] == 'Travel']
+    intervention_col = ["Date", "Intervention type", "Description"]
+    intervention = intervention[intervention_col]
+    intervention['Date'] = pd.to_datetime(intervention['Date']).dt.date
+    intervention.reset_index(drop=True, inplace=True)
 
     # - Graph of number of people travelling by month aka the whole year(jan-dec on x axis)
 
@@ -244,6 +247,17 @@ def main():
     print(stats.normaltest(predictedDataWC['Trips by United States residents']).pvalue)
     print(stats.normaltest(predictedDataWC['Trips by all other countries residents']).pvalue)
     print(stats.normaltest(predictedDataWC['Total']).pvalue)
+
+    fig5, ax5 = plt.subplots(figsize=(50, 40))
+    plt.box(False)
+    ax5.xaxis.set_visible(False)
+    ax5.yaxis.set_visible(False)
+    intervention_table = table(ax5, intervention, loc='center', colWidths=[0.05, 0.06, 0.55])
+    intervention_table.auto_set_font_size(False)
+    intervention_table.set_fontsize(30)
+    intervention_table.scale(2, 4)
+
+    plt.savefig('table.png')
 
 
 if __name__ == '__main__':
